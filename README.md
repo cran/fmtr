@@ -3,7 +3,7 @@
 <!-- badges: start -->
 
 [![fmtr version](https://www.r-pkg.org/badges/version/fmtr)](https://cran.r-project.org/package=fmtr)
-[![fmtr lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://cran.r-project.org/package=fmtr)
+[![fmtr lifecycle](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://cran.r-project.org/package=fmtr)
 [![fmtr downloads](https://cranlogs.r-pkg.org/badges/grand-total/fmtr)](https://cran.r-project.org/package=fmtr)
 [![Travis build status](https://travis-ci.com/dbosak01/logr.svg?branch=master)](https://travis-ci.com/dbosak01/fmtr)
 
@@ -77,6 +77,7 @@ fdata(df)
 * The `formats` and `fattr` functions to easily assign formatting attributes.
 * The `value` and `condition` functions to create a new user-defined format.
 * The `flist` function to create a formatting list.
+* A set of formatting helper functions for statistical reports. 
 
 ## How to use fdata()
 Data can be formatted by assigning formats to the **format** attribute
@@ -86,6 +87,7 @@ function on that data.  A sample program is as follows:
 ```
 # Set up data frame
 df <- mtcars[1:10, c("mpg", "cyl")]
+df
 
 # Define and assign formats
 attr(df$mpg, "format") <- value(condition(x >= 20, "High"),
@@ -262,7 +264,7 @@ Sometimes data needs to be formatted differently for each row.  This
 situation is difficult to deal with in any language.  
 But it can be made easy in R with the **fmtr** package and a formatting list.
 
-A formatting list is a list that contains one or more of the three types
+A formatting list is a list that contains one or more of the four types
 of formatting objects described above.  A formatting list can be applied in 
 two different ways: in order, or with a lookup.  
 
@@ -301,11 +303,11 @@ df
 
 # Set up formatting list
 lst <- flist(type = "row", lookup = v1,
-             num = function(x) format(x, digits = 2, nsmall = 1),
+             num = "%.1f",
              char = value(condition(x == "H", "High"),
                           condition(x == "L", "Low"),
                           condition(TRUE, "NA")),
-             date = function(x) format(x, format = "%y-%m"))
+             date = "%y-%m")
 
 # Assign formatting list to values column
 attr(df$values, "format") <- lst
@@ -347,3 +349,21 @@ easily.  These include the `widths` and `justification` functions to set
 columns widths and column justification on an entire data frame.  The package
 also includes class testing functions like `is.format` and `is.flist`.
 
+## Formatting Helper Functions
+
+The **fmtr** package also contains several formatting helper functions.  These
+functions help with common formatting styles seen in statistical reports.
+For example, a range from 1 to 10 is commonly displayed as "1 - 10", with a 
+hyphen separating the minimum from the maximum.  To accomplish this formatting
+easily, the package provides a `fmt_range()` function that both calculates
+the range and formats it in the desired manner.
+
+Below is a complete list of the formatting helper functions.  See the help 
+documentation for additional details:
+
+* `fmt_range()`
+* `fmt_n()`
+* `fmt_quantile_range()`
+* `fmt_median()`
+* `fmt_cnt_pct()`
+* `fmt_mean_sd()`

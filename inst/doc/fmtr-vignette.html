@@ -14,19 +14,6 @@
 
 <title>fmtr-vignette</title>
 
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
 // Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
@@ -310,6 +297,7 @@ fdata(df)
 <p>Data can be formatted by assigning formats to the <strong>format</strong> attribute of the columns in your dataframe or tibble, and then by calling the <code>fdata()</code> function on that data. A sample program is as follows:</p>
 <pre><code># Set up data frame
 df &lt;- mtcars[1:10, c(&quot;mpg&quot;, &quot;cyl&quot;)]
+df
 
 # Define and assign formats
 attr(df$mpg, &quot;format&quot;) &lt;- value(condition(x &gt;= 20, &quot;High&quot;),
@@ -434,7 +422,7 @@ fapply(v1, fmt2)
 <h4>A formatting list</h4>
 <p>Sometimes data needs to be formatted differently for each row. This situation is difficult to deal with in any language.<br />
 But it can be made easy in R with the <strong>fmtr</strong> package and a formatting list.</p>
-<p>A formatting list is a list that contains one or more of the three types of formatting objects described above. A formatting list can be applied in two different ways: in order, or with a lookup.</p>
+<p>A formatting list is a list that contains one or more of the four types of formatting objects described above. A formatting list can be applied in two different ways: in order, or with a lookup.</p>
 <p>By default, the list is applied in order. That means the first format in the list is applied to the first item in the vector, the second format in the list is applied to the second item in the vector, and so on. The list is recycled if the number of list items is shorter than the number of values in the vector.</p>
 <p>For the lookup method, the formatting object is specified by a lookup vector. The lookup vector should contain names associated with the elements in the formatting list. The lookup vector should also contain the same number of items as the data vector. For each item in the data vector, <strong>fmtr</strong> will look up the appropriate format from the formatting list, and apply that format to the corresponding data value.</p>
 <p>The following is an example of a lookup style formatting list:</p>
@@ -456,11 +444,11 @@ df
 
 # Set up formatting list
 lst &lt;- flist(type = &quot;row&quot;, lookup = v1,
-             num = function(x) format(x, digits = 2, nsmall = 1),
+             num = &quot;%.1f&quot;,
              char = value(condition(x == &quot;H&quot;, &quot;High&quot;),
                           condition(x == &quot;L&quot;, &quot;Low&quot;),
                           condition(TRUE, &quot;NA&quot;)),
-             date = function(x) format(x, format = &quot;%y-%m&quot;))
+             date = &quot;%y-%m&quot;)
 
 # Assign formatting list to values column
 attr(df$values, &quot;format&quot;) &lt;- lst
@@ -495,6 +483,19 @@ correspond to the names of the columns in the data frame. This function is usefu
 <h3>Other convenience functions</h3>
 <p>The <code>logr</code> package contains several other functions for setting attributes easily. These include the <code>widths</code> and <code>justification</code> functions to set columns widths and column justification on an entire data frame. The package also includes class testing functions like <code>is.format</code> and <code>is.flist</code>.</p>
 </div>
+</div>
+<div id="formatting-helper-functions" class="section level2">
+<h2>Formatting Helper Functions</h2>
+<p>The <strong>fmtr</strong> package also contains several formatting helper functions. These functions help with common formatting styles seen in statistical reports. For example, a range from 1 to 10 is commonly displayed as “1 - 10”, with a hyphen separating the minimum from the maximum. To accomplish this formatting easily, the package provides a <code>fmt_range()</code> function that both calculates the range and formats it in the desired manner.</p>
+<p>Below is a complete list of the formatting helper functions. See the help documentation for additional details:</p>
+<ul>
+<li><code>fmt_range()</code></li>
+<li><code>fmt_n()</code></li>
+<li><code>fmt_quantile_range()</code></li>
+<li><code>fmt_median()</code></li>
+<li><code>fmt_cnt_pct()</code></li>
+<li><code>fmt_mean_sd()</code></li>
+</ul>
 </div>
 </div>
 

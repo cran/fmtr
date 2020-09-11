@@ -92,6 +92,7 @@ function on that data.  A sample program is as follows:
 ```
 # Set up data frame
 df <- mtcars[1:10, c("mpg", "cyl")]
+df
 
 # Define and assign formats
 attr(df$mpg, "format") <- value(condition(x >= 20, "High"),
@@ -268,7 +269,7 @@ Sometimes data needs to be formatted differently for each row.  This
 situation is difficult to deal with in any language.  
 But it can be made easy in R with the **fmtr** package and a formatting list.
 
-A formatting list is a list that contains one or more of the three types
+A formatting list is a list that contains one or more of the four types
 of formatting objects described above.  A formatting list can be applied in 
 two different ways: in order, or with a lookup.  
 
@@ -307,11 +308,11 @@ df
 
 # Set up formatting list
 lst <- flist(type = "row", lookup = v1,
-             num = function(x) format(x, digits = 2, nsmall = 1),
+             num = "%.1f",
              char = value(condition(x == "H", "High"),
                           condition(x == "L", "Low"),
                           condition(TRUE, "NA")),
-             date = function(x) format(x, format = "%y-%m"))
+             date = "%y-%m")
 
 # Assign formatting list to values column
 attr(df$values, "format") <- lst
@@ -352,4 +353,23 @@ The `logr` package contains several other functions for setting attributes
 easily.  These include the `widths` and `justification` functions to set 
 columns widths and column justification on an entire data frame.  The package
 also includes class testing functions like `is.format` and `is.flist`.
+
+## Formatting Helper Functions
+
+The **fmtr** package also contains several formatting helper functions.  These
+functions help with common formatting styles seen in statistical reports.
+For example, a range from 1 to 10 is commonly displayed as "1 - 10", with a 
+hyphen separating the minimum from the maximum.  To accomplish this formatting
+easily, the package provides a `fmt_range()` function that both calculates
+the range and formats it in the desired manner.
+
+Below is a complete list of the formatting helper functions.  See the help 
+documentation for additional details:
+
+* `fmt_range()`
+* `fmt_n()`
+* `fmt_quantile_range()`
+* `fmt_median()`
+* `fmt_cnt_pct()`
+* `fmt_mean_sd()`
 
