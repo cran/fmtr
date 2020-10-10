@@ -45,12 +45,24 @@ correspond to names on the formatting list.
 Examples of column type and row type formatting lists are given below.
 }
 \examples{
-# Create flist
-lst <- list("\%d\%b\%Y", "\%.1f")
-flst <- as.flist(lst)
-is.flist(flst)
-is.flist("A")
+# Example 1: Create flist from list - column type
+lst1 <- list("\%d\%b\%Y", "\%.1f")
+fl1  <- as.flist(lst1, type = "column")
+
+# Example 2: Create flist from list - row type
+lst2 <- list(lkup = c(A = "Label A", B = "Label B"),
+             dec1 = "\%.1f",
+             dt1  = "\%d\%b\%Y")
+fl2 <- as.flist(lst2, type = "row")
+             
 }
 \seealso{
 \code{\link{flist}} function documentation for additional details.
+
+Other flist: 
+\code{\link{as.data.frame.fmt_lst}()},
+\code{\link{flist}()},
+\code{\link{is.flist}()},
+\code{\link{print.fmt_lst}()}
 }
+\concept{flist}

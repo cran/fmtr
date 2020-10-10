@@ -26,6 +26,7 @@
 #' to a dataframe.}
 #'   \item {\code{\link{fapply}}:}{ Applies formatting 
 #' to a vector.}
+#'   \item {\code{\link{fcat}}:}{ Creates a format catalog.}
 #'   \item {\code{\link{value}}:}{ Creates a new
 #' user-defined format.}
 #'   \item {\code{\link{formats}}:}{ Helps assign format attributes
@@ -37,16 +38,16 @@
 #' @section Available Formats:
 #' The formats that can be used with \strong{fmtr} include the following:
 #' \itemize{
-#'   \item Formatting string
+#'   \item Formatting strings
 #'   \item Named vectors
 #'   \item Vectorized functions
 #'   \item User-defined formats
 #'   \item Formatting lists
 #' }
 #' 
-#' A formatting string will be passed to the \code{\link[base]{format}}
-#' function, or the \code{\link[base]{sprintf}} function depending on the
-#' class of the input vector.
+#' A formatting string is a compact set of codes typically used for formatting
+#' dates and numbers.  See \link{FormattingStrings} for a glossary of 
+#' common formatting codes.
 #' 
 #' Named vectors map one string value to another string value.
 #' 
@@ -65,6 +66,12 @@
 #'
 #' See the \code{\link{fapply}} function documentation for additional details
 #' on applying formats.
+#' 
+#' Formats can be collected and stored as a single file, called a format
+#' catalog.  This functionality makes it easy to reuse formats in new
+#' programs, with new data, or to share them with colleagues.  
+#' See the \code{\link{fcat}} function for 
+#' additional information.
 #' @docType package
 #' @name fmtr
 NULL
@@ -87,7 +94,7 @@ NULL
 #' function.  
 #' 
 #' The formatting codes for these functions are simple to use. For example, 
-#' the code \code{fapply(as.Date("1970-01-01", "\%B \%d, \%Y"))} will produce
+#' the code \code{fapply(as.Date("1970-01-01"), "\%B \%d, \%Y")} will produce
 #' the output \code{"January 01, 1970"}.  The code 
 #' \code{fapply(1.2345, "\%.1f")} will produce the output \code{"1.2"}.
 #' 
@@ -145,4 +152,9 @@ NULL
 #' fapply(a, "The number is %f.")     # Interpolation
 #' @name FormattingStrings
 NULL
+
+  
+
+
+
 

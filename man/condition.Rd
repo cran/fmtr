@@ -9,18 +9,23 @@ condition(expr, label, order = NULL)
 \arguments{
 \item{expr}{A valid R expression.  The value in the expression is identified
 by the variable 'x', i.e.  x == 'A' or x > 3 & x < 6.  The expression 
-should not be quoted.}
+should not be quoted.  The expression parameter will accept equality, 
+relational, and logical operators.  It will also accept numeric or string
+literals.  String literals should be quoted.  It will not accept functions 
+or any expression that includes a comma.  For these more complex operations, 
+it is best to use a vectorized function.  See \code{\link{fapply}} for an example of 
+a vectorized function.}
 
 \item{label}{A label to be assigned if the expression is TRUE.  The label 
 can any valid literal value.  Typically, the label will be a character 
 string.  However, the label parameter does not restrict the data type.
 Meaning, the label could also be a number, date, or other R object type.}
 
-\item{order}{An option integer order number. When used, this parameter 
+\item{order}{An optional integer order number. When used, this parameter 
 will effect the order of the labels returned from the 
 \code{\link{labels.fmt}} function.  The purpose of the parameter is to control
 ordering of the format labels independently of the order they are assigned
-in the conditions.  This functionality is useful when you are using the format
+in the conditions.  The order parameter is useful when you are using the format
 labels to assign ordered levels in a factor.}
 }
 \value{
@@ -28,6 +33,7 @@ The new condition object.
 }
 \description{
 The \code{condition} function creates a condition for a user-defined format.
+It is typically used in conjunction with the \code{\link{value}} function.
 }
 \details{
 The \code{condition} function creates a condition as part of a format 
@@ -37,13 +43,14 @@ expression parameter can be any valid R expression.   The label parameter
 can be any valid literal.  Conditions are evaluated in the order they 
 are assigned.  A default condition is created by assigning the expression
 parameter to TRUE.  If your data can contain missing values, it is 
-recommended that you test for those values first.
+recommended that you test for those values first.  Any data values that 
+do not meet one of the conditions will fall through the format as-is.
 
 The condition object is an S3 class of type "fmt_cond". The condition 
 labels can be extracted from the format using the \code{labels} function.
 
 The format object may be applied to a vector using the \code{fapply}
-function.  See \code{link{fapply}} for further details.
+function.  See \code{\link{fapply}} for further details.
 }
 \examples{
 # Set up vector

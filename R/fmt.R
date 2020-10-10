@@ -20,15 +20,18 @@
 #' of values
 #' assigned to the \strong{labels} property of the \code{condition} arguments.  
 #' These labels may be accessed either from the \code{levels} function or the 
-#' \code{labels} function.
+#' \code{labels} function.  If no order has been assigned to the conditions,
+#' the labels will be returned in the order the conditions were passed to the
+#' \code{value} function.  If an order has been assigned to the conditions,
+#' the labels will be returned in the order specified.
 #' 
 #' The format object may be applied to a vector using the \code{fapply}
 #' function.  See \code{\link{fapply}} for further details.
 #'
-#' @param ... One or more conditions.
+#' @param ... One or more \code{\link{condition}} functions.
 #' @return The new format object.
 #' @seealso \code{\link{condition}} to define a condition,
-#' \code{\link{levels}} or \code{labels} to access the labels, and 
+#' \code{\link{levels}} or \code{\link{labels.fmt}} to access the labels, and 
 #' \code{\link{fapply}} to apply the format to a vector.
 #' @export
 #' @examples 
@@ -84,7 +87,8 @@ value <- function(...) {
 #' Define a condition for a user-defined format
 #' 
 #' @description 
-#' The \code{condition} function creates a condition for a user-defined format. 
+#' The \code{condition} function creates a condition for a user-defined format.
+#' It is typically used in conjunction with the \code{\link{value}} function. 
 #' 
 #' @details 
 #' The \code{condition} function creates a condition as part of a format 
@@ -94,26 +98,32 @@ value <- function(...) {
 #' can be any valid literal.  Conditions are evaluated in the order they 
 #' are assigned.  A default condition is created by assigning the expression
 #' parameter to TRUE.  If your data can contain missing values, it is 
-#' recommended that you test for those values first.
+#' recommended that you test for those values first.  Any data values that 
+#' do not meet one of the conditions will fall through the format as-is.
 #' 
 #' The condition object is an S3 class of type "fmt_cond". The condition 
 #' labels can be extracted from the format using the \code{labels} function.
 #' 
 #' The format object may be applied to a vector using the \code{fapply}
-#' function.  See \code{link{fapply}} for further details.
+#' function.  See \code{\link{fapply}} for further details.
 #'
 #' @param expr A valid R expression.  The value in the expression is identified
 #' by the variable 'x', i.e.  x == 'A' or x > 3 & x < 6.  The expression 
-#' should not be quoted.
+#' should not be quoted.  The expression parameter will accept equality, 
+#' relational, and logical operators.  It will also accept numeric or string
+#' literals.  String literals should be quoted.  It will not accept functions 
+#' or any expression that includes a comma.  For these more complex operations, 
+#' it is best to use a vectorized function.  See \code{\link{fapply}} for an example of 
+#' a vectorized function.
 #' @param label A label to be assigned if the expression is TRUE.  The label 
 #' can any valid literal value.  Typically, the label will be a character 
 #' string.  However, the label parameter does not restrict the data type.
 #' Meaning, the label could also be a number, date, or other R object type.
-#' @param order An option integer order number. When used, this parameter 
+#' @param order An optional integer order number. When used, this parameter 
 #' will effect the order of the labels returned from the 
 #' \code{\link{labels.fmt}} function.  The purpose of the parameter is to control
 #' ordering of the format labels independently of the order they are assigned
-#' in the conditions.  This functionality is useful when you are using the format
+#' in the conditions.  The order parameter is useful when you are using the format
 #' labels to assign ordered levels in a factor.  
 #' @return The new condition object.
 #' @seealso \code{\link{fdata}} to apply formatting to a data frame,
@@ -145,6 +155,98 @@ condition <- function(expr, label, order = NULL) {
   
 }
   
+
+
+# Conversion Functions ----------------------------------------------------
+
+#' @title Generic Casting Method for Formats
+#' @description A generic method for casting objects to
+#' a format.  Individual objects will inherit from this function.
+#' @param x The object to cast.
+#' @return A formatting object, created using the information in the 
+#' input object.
+#' @export
+as.fmt <- function (x) {
+  UseMethod("as.fmt", x)
+}
+
+
+#' @title Casts a format to a data frame
+#' @description Cast a format object to a data frame.  This function is
+#' a class-specific implementation of the the generic \code{as.data.frame} 
+#' method.
+#' @param x An object of class "fmt".
+#' @param row.names Row names of the return data frame.  Default is NULL.
+#' @param optional TRUE or FALSE value indicating whether converting to
+#' syntactic variable names is options.  In the case of formats, the 
+#' resulting data frame will always be returned with syntactic names, and 
+#' this parameter is ignored.
+#' @param ... Any follow-on parameters.
+#' @param name An optional name for the format.  By default, the name of 
+#' the variable holding the format will be used.
+#' @export
+as.data.frame.fmt <- function(x, row.names = NULL, optional = FALSE, ...,
+                              name=deparse(substitute(x, 
+                                              env = environment()))) {
+  
+  if (all(class(x) != "fmt"))
+    stop("Parameter x must be an object of class 'fmt'.")
+  
+  e <- c()
+  l <- c()
+  o <- c()
+  
+  for (cond in x) {
+    e[[length(e) + 1]] <- deparse1(cond$expression, collapse = " ")
+    l[[length(l) + 1]] <- cond$label
+    o[[length(o) + 1]] <- ifelse(is.null(cond$order), NA, cond$order)
+  }
+  
+  e <- unlist(e)
+  l <- unlist(l)
+  o <- unlist(o)
+  
+  dat <- data.frame(Name = name, Type = "U", 
+                    Expression = e, Label = l, Order = o)
+  
+  if (!is.null(row.names))
+    rownames(dat) <- row.names
+  
+  return(dat)
+  
+}
+
+
+#' @export
+as.fmt.data.frame <- function(x) {
+  
+  
+  names(x) <- titleCase(names(x))
+  
+  ret <- list()
+  
+  for (i in seq_len(nrow(x))) {
+    
+    
+    y <- structure(list(), class = c("fmt_cnd"))    
+    
+    y$expression <- str2lang(x[i, "Expression"])
+    y$label <- x[i, "Label"]
+    y$order <- x[i, "Order"]
+    
+    
+    ret[[length(ret) + 1]] <- y
+    
+    
+  }
+  
+  class(ret) <- "fmt"
+  
+  
+  return(ret)
+  
+}
+
 
 # Utilities ---------------------------------------------------------------
 
@@ -248,6 +350,56 @@ is.format <- function(x) {
 
 
 
+#' @title Print a format
+#' @description Prints a format object.  This function is
+#' a class-specific implementation of the the generic \code{print} method.
+#' @param x An object of class "fmt".
+#' @param ... Any follow-on parameters to the print function.
+#' @param name The name of the format to print. By default, the variable
+#' name that holds the format will be used.
+#' @param verbose Turn on or off verbose printing mode.  Verbose mode will
+#' print object as a list.  Otherwise, the object will be printed as a table.
+#' @export
+print.fmt <- function(x, ..., name = deparse(substitute(x, env = environment())), 
+                      verbose = FALSE) {
+  
+  if (!any(class(x) == "fmt"))
+    stop("Class must be of type 'fmt'.")
+  
+  if (verbose == TRUE) {
+    print(unclass(x))
+  } else {
+
+
+    grey60 <- make_style(grey60 = "#999999")
+    cat(grey60("# A user-defined format: " %+% 
+                 as.character(length(x)) %+% " conditions\n")) 
+    
+    dat <- as.data.frame(x, name = name)
+    
+    print(dat)
+  }
+  
+  
+  invisible(x)
+}
+
+
+
+
+#' @noRd
+titleCase <- Vectorize(function(x) {
+  
+  # Split input vector value
+  s <- strsplit(x, " ")[[1]]
+  
+  # Perform title casing and recombine
+  ret <- paste(toupper(substring(s, 1,1)), tolower(substring(s, 2)),
+        sep="", collapse=" ")
+  
+  return(ret)
+  
+}, USE.NAMES = FALSE)
 
 
 # Testing -----------------------------------------------------------------

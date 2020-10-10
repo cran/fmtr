@@ -21,7 +21,7 @@ value is NULL, meaning the vector will be variable width.}
 A vector of formatted values.
 }
 \description{
-The \code{fapply} function can be used to apply a formatting to a vector.
+The \code{fapply} function applies formatting to a vector.
 }
 \details{
 The \code{fapply} function accepts several types of formats:  formatting
@@ -56,7 +56,7 @@ lookups on character vectors.}
   provides
 the most flexibility and power over your formatting.  You can use 
 an existing formatting function from any package, or create 
-your own user-defined formatting function.}
+your own vectorized formatting function using \code{\link[base]{Vectorize}}.}
 }
 
 \code{fapply} will also accept a formatting list, which can contain any 
@@ -97,10 +97,8 @@ fapply(v2, fmt3)
 # Set up vectorized function
 fmt4 <- Vectorize(function(x) {
 
-  if (x == "A")
-    ret <- "Function Label A"
-  else if (x == "B")
-    ret <- "Function Label B"
+  if (x \%in\% c("A", "B"))
+    ret <- paste("Function Label", x)
   else
     ret <- "Function Other" 
     
@@ -108,7 +106,7 @@ fmt4 <- Vectorize(function(x) {
 })
 
 # Apply format to vector
-fapply(v1, fmt4)
+fapply(v2, fmt4)
 
 
 ## Example 5: Formatting List - Row Type ##
@@ -137,12 +135,13 @@ v5 <- c(Sys.Date(), Sys.Date() + 30, Sys.Date() + 60)
 v5
 
 # Create formatting list
-lst <- flist("\%B", "This month is: \%s")
+lst <- flist("\%B", "This month is: \%s", type = "column")
 
 # Apply formatting list to vector
 fapply(v5, lst)
 }
 \seealso{
+\code{\link{fcat}} to create a format catalog,
 \code{\link{value}} to define a format, 
 \code{\link{fattr}} to easily set the formatting attributes of a vector, 
 and \code{\link{flist}} to define a formatting list.  Also see 

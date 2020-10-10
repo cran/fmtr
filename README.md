@@ -5,7 +5,7 @@
 [![fmtr version](https://www.r-pkg.org/badges/version/fmtr)](https://cran.r-project.org/package=fmtr)
 [![fmtr lifecycle](https://img.shields.io/badge/lifecycle-stable-blue.svg)](https://cran.r-project.org/package=fmtr)
 [![fmtr downloads](https://cranlogs.r-pkg.org/badges/grand-total/fmtr)](https://cran.r-project.org/package=fmtr)
-[![Travis build status](https://travis-ci.com/dbosak01/logr.svg?branch=master)](https://travis-ci.com/dbosak01/fmtr)
+[![Travis build status](https://travis-ci.com/dbosak01/fmtr.svg?branch=master)](https://travis-ci.com/dbosak01/fmtr)
 
 <!-- badges: end -->
 
@@ -77,6 +77,7 @@ fdata(df)
 * The `formats` and `fattr` functions to easily assign formatting attributes.
 * The `value` and `condition` functions to create a new user-defined format.
 * The `flist` function to create a formatting list.
+* The `fcat` function to create a format catalog \*NEW in v1.2\*.
 * A set of formatting helper functions for statistical reports. 
 
 ## How to use fdata()
@@ -327,6 +328,38 @@ fdata(df)
 
 ```
 
+## Format Catalogs
+
+### The `fcat()` function
+As of **fmtr** version 1.2, you can now create a format catalog.  A format
+catalog is a collection of formats that can be saved, and shared, and reused.
+The format catalog is created with the `fcat()` function.  A format catalog 
+can also be converted to and from a data frame using the `as.data.frame()`
+and `as.fcat()` functions.  These functions make it easy to store
+formatting information as tabular metadata, such as in database tables or 
+Excel spreadsheets. Here is an example:
+```
+# Create format catalog
+c1 <- fcat(num_fmt  = "%.1f",
+           label_fmt = value(condition(x == "A", "Label A"),
+                             condition(x == "B", "Label B"),
+                             condition(TRUE, "Other")),
+           date_fmt = "%d%b%Y")
+ 
+# Use formats in the catalog
+fapply(2, c1$num_fmt)
+fapply(c("A", "B", "C", "B"), c1$label_fmt)
+fapply(Sys.Date(), c1$date_fmt)
+
+# Convert to a data frame
+dat <- as.data.frame(c1)
+dat
+
+# Save format catalog for later use
+write.fcat(c1, tempdir())
+
+```
+
 ## Convenience Functions
 
 ### The `formats()` function
@@ -344,7 +377,7 @@ arguments to the `fattr()` function, instead of as properties on a call
 to `attr()`.
 
 ### Other convenience functions
-The `logr` package contains several other functions for setting attributes
+The `fmtr` package contains several other functions for setting attributes
 easily.  These include the `widths` and `justification` functions to set 
 columns widths and column justification on an entire data frame.  The package
 also includes class testing functions like `is.format` and `is.flist`.

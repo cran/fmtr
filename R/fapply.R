@@ -5,7 +5,7 @@
 #' Apply formatting to a vector
 #' 
 #' @description 
-#' The \code{fapply} function can be used to apply a formatting to a vector. 
+#' The \code{fapply} function applies formatting to a vector. 
 #' @details 
 #' The \code{fapply} function accepts several types of formats:  formatting
 #' strings, named vectors,
@@ -38,7 +38,7 @@
 #'   provides
 #' the most flexibility and power over your formatting.  You can use 
 #' an existing formatting function from any package, or create 
-#' your own user-defined formatting function.}
+#' your own vectorized formatting function using \code{\link[base]{Vectorize}}.}
 #' }
 #' 
 #' \code{fapply} will also accept a formatting list, which can contain any 
@@ -51,7 +51,8 @@
 #' @param justify Whether to justify the return vector.  Valid values are 
 #' 'left', 'right', 'center', 'centre', or 'none'. 
 #' @return A vector of formatted values.
-#' @seealso \code{\link{value}} to define a format, 
+#' @seealso \code{\link{fcat}} to create a format catalog,
+#' \code{\link{value}} to define a format, 
 #' \code{\link{fattr}} to easily set the formatting attributes of a vector, 
 #' and \code{\link{flist}} to define a formatting list.  Also see 
 #' \code{\link{fdata}} to apply formats to an entire data frame, and 
@@ -90,10 +91,8 @@
 #' # Set up vectorized function
 #' fmt4 <- Vectorize(function(x) {
 #' 
-#'   if (x == "A")
-#'     ret <- "Function Label A"
-#'   else if (x == "B")
-#'     ret <- "Function Label B"
+#'   if (x %in% c("A", "B"))
+#'     ret <- paste("Function Label", x)
 #'   else
 #'     ret <- "Function Other" 
 #'     
@@ -101,7 +100,7 @@
 #' })
 #' 
 #' # Apply format to vector
-#' fapply(v1, fmt4)
+#' fapply(v2, fmt4)
 #' 
 #' 
 #' ## Example 5: Formatting List - Row Type ##
@@ -130,7 +129,7 @@
 #' v5
 #' 
 #' # Create formatting list
-#' lst <- flist("%B", "This month is: %s")
+#' lst <- flist("%B", "This month is: %s", type = "column")
 #' 
 #' # Apply formatting list to vector
 #' fapply(v5, lst)
@@ -154,8 +153,8 @@ fapply <- function(x, format = NULL, width = NULL, justify = NULL) {
   
   if (!is.null(format)) {
 
-    if (!class(format) %in% c("NULL", "character", "fmt", 
-                              "fmt_lst", "function"))
+    if (!any(class(format) %in% c("NULL", "character", "fmt", 
+                              "fmt_lst", "function")))
       stop(paste0("class of format parameter value is invalid: ", 
                   class(format)))
   }
@@ -236,11 +235,17 @@ fapply <- function(x, format = NULL, width = NULL, justify = NULL) {
 #' @noRd
 eval_conditions <- function(x, conds) {
   
-  ret <- NULL
+  # Default to the value itself
+  ret <- x
+  
+  # Check all conditions
   for(cond in conds) {
-    if (eval(cond[["expression"]])) {
-      ret <- cond[["label"]]
-      break()
+    tmp <- eval(cond[["expression"]])
+    if (!is.na(tmp) & !is.null(tmp)) {
+      if (tmp) {
+        ret <- cond[["label"]]
+        break()
+      }
     }
   }
   
