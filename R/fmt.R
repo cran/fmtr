@@ -220,6 +220,11 @@ as.data.frame.fmt <- function(x, row.names = NULL, optional = FALSE, ...,
 #' @export
 as.fmt.data.frame <- function(x) {
   
+  if ("tbl_df" %in% class(x))
+    x <- as.data.frame(x)
+  
+  if (!"data.frame" %in% class(x))
+    stop("Input data must be a data frame")
   
   names(x) <- titleCase(names(x))
   
@@ -241,7 +246,7 @@ as.fmt.data.frame <- function(x) {
   }
   
   class(ret) <- "fmt"
-  
+  attr(ret, "levels") <- labels(ret)
   
   return(ret)
   
@@ -293,8 +298,10 @@ labels.fmt <- function(object, ...) {
       r[length(r) + 1] <- object[[i]][["label"]]
     } else {
       tmp <- object[[i]][["order"]]
-
-      if (tmp > 0 & tmp <= length(object))
+      
+      if (is.na(tmp))
+        r[length(r) + 1] <- object[[i]][["label"]]
+      else if (tmp > 0 & tmp <= length(object))
         o[tmp] <- object[[i]][["label"]]
       else
         stop(paste("Order parameter invalid:", tmp))

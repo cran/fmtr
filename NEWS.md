@@ -1,3 +1,13 @@
+# fmtr 1.3.0
+
+* Added functions to convert data frames, tibble, and format catalogs to flist
+* Print summarized list of fcat contents 
+* Fixed bug on as.fmt() when input data is a tibble
+* Added label and description parameters to fattr()
+* Added descriptions() function to set descriptions for data frame
+* Fixed bug on levels() and labels() functions when formats read from data frame
+* Made a few documentation fixes
+
 # fmtr 1.2.2
 
 * Documentation updates/improvements.
