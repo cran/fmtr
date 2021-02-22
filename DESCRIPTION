@@ -1,7 +1,7 @@
 Package: fmtr
 Type: Package
 Title: Easily Apply Formats to Data
-Version: 1.4.1
+Version: 1.5.0
 Author: David Bosak
 Maintainer: David Bosak <dbosak01@gmail.com>
 Description: Contains a set of functions that can be used to apply
@@ -22,6 +22,6 @@ Imports: tibble, stats, crayon
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-01-05 05:20:28 UTC; User
+Packaged: 2021-02-22 02:03:55 UTC; dbosa
 Repository: CRAN
-Date/Publication: 2021-01-06 16:00:45 UTC
+Date/Publication: 2021-02-22 20:10:06 UTC
