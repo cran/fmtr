@@ -166,12 +166,12 @@ as.fcat.data.frame <- function(x) {
   
 }
 
-
+#' @title Convert a tibble to a format catalog
 #' @inherit as.fcat.data.frame
 #' @export
 as.fcat.tbl_df <- function(x) {
   
- ret <- as.fcat.data.frame(as.data.frame(x))
+ ret <- as.fcat.data.frame(as.data.frame(x, stringsAsFactors = FALSE))
  
  return(ret)
 }
@@ -271,13 +271,13 @@ as.data.frame.fcat <- function(x, row.names = NULL, optional = FALSE, ...) {
                                 Type = "S",
                                 Expression = x[[nm]],
                                 Label = "", 
-                                Order = NA)
+                                Order = NA, stringsAsFactors = FALSE)
       } else {
         tmp[[nm]] <- data.frame(Name = nm, 
                                 Type = "V",
                                 Expression = paste(deparse(x[[nm]]), collapse = " "),
                                 Label = "", 
-                                Order = NA)
+                                Order = NA, stringsAsFactors = FALSE)
       }
                               
     } else if (any(class(x[[nm]]) == "function")) {
@@ -286,7 +286,7 @@ as.data.frame.fcat <- function(x, row.names = NULL, optional = FALSE, ...) {
                                Type = "F",
                                Expression = paste(deparse(x[[nm]]), collapse = " "),
                                Label = "", 
-                               Order = NA)
+                               Order = NA, stringsAsFactors = FALSE)
         
         
     }

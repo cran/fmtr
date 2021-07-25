@@ -30,7 +30,7 @@
 #' attributes assigned to the data frame columns.  These attributes can be 
 #' controlled at the column level.  Using
 #' attributes to assign formatting and \code{fdata} to apply those attributes
-#' gives you a create deal of control over how
+#' gives you a great deal of control over how
 #' your data is presented.
 #'
 #' @param x A data frame or tibble to be formatted.
@@ -113,7 +113,7 @@ fdata <- function(x, ...) {
   names(ret) <- names(x)
   
   # Convert list to data frame
-  ret <- as.data.frame(ret)
+  ret <- as.data.frame(ret, stringsAsFactors = FALSE)
   
   # Restore names again as they are getting lost in R 3.6
   for (nm in names(x)) {
