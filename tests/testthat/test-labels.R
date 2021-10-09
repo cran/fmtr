@@ -18,6 +18,12 @@ test_that("labels() function works as expected for data frames.", {
   expect_equal(length(lst), 2)
   expect_equal(lst, list(mpg = "Miles Per Gallon", cyl = "Cylinders"))
   
+  
+  labels(df1)
+  
+  labels(df1) <- NULL
+  expect_equal(length(labels(df1)), 0)
+  
 })
 
 
@@ -39,4 +45,20 @@ test_that("labels() function works as expected for tibbles.", {
   expect_equal(lst, list(mpg = "Miles Per Gallon", cyl = "Cylinders"))
   
 
+})
+
+
+test_that("labels() parameter checks work as expected.", {
+  
+  s <- "hello"
+  
+  expect_error(labels(s) <- list(a = "One"))
+  
+  dat <- mtcars
+  
+  names(dat) <- NULL
+  
+  expect_error(labels(dat) <- list(a = "One"))
+  
+  
 })

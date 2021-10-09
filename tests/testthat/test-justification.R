@@ -11,8 +11,6 @@ test_that("justification() function works as expected.", {
   # Assign formats
   justification(df1) <- list(mpg = "right", 
                              cyl = "center")
-  widths(df1) <-   list(mpg = 12, 
-                   cyl = 10)
   
   # Extract format list
   lst <- justification(df1)
@@ -20,7 +18,12 @@ test_that("justification() function works as expected.", {
   expect_equal(length(lst), 2)
   
   
-  format(df1) 
+  expect_error(justification(df1) <- list(mpd = "right"))
+  
+  
+  justification(df1)
+  
+  justification(df1) <- NULL
+  expect_equal(length(justification(df1)), 0)
   
 })
-

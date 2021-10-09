@@ -1,3 +1,9 @@
+# fmtr 1.5.3
+
+* Added covr and codecov.
+* Allow assignment of NULL to convenience functions to clear attributes.
+* Update examples and documentation for convenience functions.
+
 # fmtr 1.5.2
 
 * Fixed bug on R 3.6 where fdata() function was turning all columns into factors.
