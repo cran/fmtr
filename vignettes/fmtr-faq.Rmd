@@ -297,7 +297,7 @@ difference is that in the case of labels, you will assign them with the
 `labels()` function instead of the `formats()` function.  Like this:
 ```{r eval=FALSE, echo=TRUE}
 # Create sample list of labels
-lst <- list(col1 = "My First Columns",
+lst <- list(col1 = "My First Column",
             col2 = "My Second Column", 
             col3 = "My Third Column")
             
@@ -314,7 +314,7 @@ labels(dat) <- lst
 # View label attributes
 labels(dat)
 # $col1
-# [1] "My First Columns"
+# [1] "My First Column"
 # 
 # $col2
 # [1] "My Second Column"
@@ -668,7 +668,7 @@ df2 <- data.frame(Name = "myfmt",
                   Order = NA)
 
 # Append default condition
-df <- rbind(df, df2)
+df <- rbind(df1, df2)
 
 # View input data
 df
@@ -710,7 +710,7 @@ to convert to a number.  I'd like to create a format to do that.  Can
 I create a user-defined format that returns a number instead of a text string?
 
 **A:** Yes. The second parameter of the `condition()` function accepts
-a character or numeric value.  That means a **fmtr** user-defined format
+a character, numeric, or logical value.  That means a **fmtr** user-defined format
 can be used to translate incoming values, whether character or numeric, 
 to a number.  Here is an example:
 

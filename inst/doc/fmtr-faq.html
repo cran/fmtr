@@ -339,7 +339,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Q:</strong> I have metadata for my datasets that includes the desired label for each variable. How can I apply these labels to my data?</p>
 <p><strong>A:</strong> This question is similar to the above question concerning formats in metadata. The process for applying labels from metadata will be nearly identical to the process for formats. You will create a named list of labels from the metadata, then assign it to the dataframe, and apply it with <code>fdata()</code>. The difference is that in the case of labels, you will assign them with the <code>labels()</code> function instead of the <code>formats()</code> function. Like this:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create sample list of labels</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lst <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">col1 =</span> <span class="st">&quot;My First Columns&quot;</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lst <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">col1 =</span> <span class="st">&quot;My First Column&quot;</span>,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">col2 =</span> <span class="st">&quot;My Second Column&quot;</span>, </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">col3 =</span> <span class="st">&quot;My Third Column&quot;</span>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>            </span>
@@ -356,7 +356,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># View label attributes</span></span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="fu">labels</span>(dat)</span>
 <span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># $col1</span></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] &quot;My First Columns&quot;</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] &quot;My First Column&quot;</span></span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># $col2</span></span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] &quot;My Second Column&quot;</span></span>
@@ -634,7 +634,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Order =</span> <span class="cn">NA</span>)</span>
 <span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Append default condition</span></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, df2)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df1, df2)</span>
 <span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co"># View input data</span></span>
 <span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>df</span>
@@ -663,7 +663,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="numeric" class="section level3">
 <h3>Can I create a numeric user-defined format?</h3>
 <p><strong>Q:</strong> I have a column of data with some character values that I want to convert to a number. I’d like to create a format to do that. Can I create a user-defined format that returns a number instead of a text string?</p>
-<p><strong>A:</strong> Yes. The second parameter of the <code>condition()</code> function accepts a character or numeric value. That means a <strong>fmtr</strong> user-defined format can be used to translate incoming values, whether character or numeric, to a number. Here is an example:</p>
+<p><strong>A:</strong> Yes. The second parameter of the <code>condition()</code> function accepts a character, numeric, or logical value. That means a <strong>fmtr</strong> user-defined format can be used to translate incoming values, whether character or numeric, to a number. Here is an example:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fmtr)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>nfmt <span class="ot">&lt;-</span> <span class="fu">value</span>(<span class="fu">condition</span>(x <span class="sc">==</span> <span class="st">&quot;A&quot;</span>, <span class="dv">1</span>),</span>
