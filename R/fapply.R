@@ -276,6 +276,12 @@ format_vector <- function(x, fmt) {
     
     # For numerics, call sprintf
     ret <- sprintf(fmt, x)
+    
+    # Find NA strings
+    nas <- ret == "NA"
+    
+    # Turn NA strings back into real NA
+    ret <- replace(ret, nas, NA)
    
   }
   
@@ -364,7 +370,7 @@ flist_column_apply <- function(lst, vect) {
   # Unlist if requested  
   if(lst$simplify == TRUE)
     ret <- unlist(ret)
-  else if (lst$simplify == FALSE & class(ret) != "list")
+  else if (lst$simplify == FALSE & typeof(ret) != "list")
     ret <- as.list(ret)
 
   return(ret)
