@@ -1,3 +1,14 @@
+# fmtr 1.5.9
+
+* Changed default separator on `fapply2()` to a blank space.  This seems
+like a more useful default.
+* Allowed label on user-defined format to be a string format.  This means
+a string format can be executed conditionally.
+* Added "type" parameter to `fmt_quantile_range()` function so user can
+specify the type of quantile algorithm to use.
+* Added output logging.
+* Updated logo.
+
 # fmtr 1.5.8
 
 * BREAKING CHANGE: Removed the `labels.data.frame()` function 

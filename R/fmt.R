@@ -27,8 +27,15 @@
 #' 
 #' The format object may be applied to a vector using the \code{fapply}
 #' function.  See \code{\link{fapply}} for further details.
+#' 
+#' Note that the label may also be a string format.  That means a 
+#' user-defined format can be used to apply string formats conditionally.
+#' This capability is useful when you want to conditionally format 
+#' data values.
 #'
 #' @param ... One or more \code{\link{condition}} functions.
+#' @param log Whether to log the creation of the format.  Default is
+#' TRUE. This parameter is used internally.
 #' @return The new format object.
 #' @seealso \code{\link{condition}} to define a condition,
 #' \code{\link{levels}} or \code{\link{labels.fmt}} to access the labels, and 
@@ -69,7 +76,18 @@
 #'               
 #' # Apply format to vector
 #' fapply(v2, fmt3)
-value <- function(...) {
+#' 
+#' 
+#' ### Example 4: Conditional formatting
+#' v3 <- c(10.398873, 12.98762, 0.5654, 11.588372)
+#' 
+#' fmt4 <- value(condition(x < 1, "< 1.0"),
+#'               condition(TRUE, "%.2f"))
+#'               
+#' fapply(v3, fmt4)
+#' # [1] "10.40" "12.99" "< 1.0" "11.59"
+#' 
+value <- function(..., log = TRUE) {
   
   if (...length() == 0)
     stop("At least one condition is required.")
@@ -79,6 +97,11 @@ value <- function(...) {
   
   # Assign labels to the levels attribute
   attr(x, "levels") <- labels(x)
+  
+  if (log_output() & log) {
+    log_logr(x)
+    print(x) 
+  }
 
   return(x)
 
@@ -120,6 +143,8 @@ value <- function(...) {
 #' can any valid literal value.  Typically, the label will be a character 
 #' string.  However, the label parameter does not restrict the data type.
 #' Meaning, the label could also be a number, date, or other R object type.
+#' The label may also be a string format, which allows you to perform
+#' conditional formatting.
 #' @param order An optional integer order number. When used, this parameter 
 #' will effect the order of the labels returned from the 
 #' \code{\link{labels.fmt}} function.  The purpose of the parameter is to control

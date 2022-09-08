@@ -279,7 +279,7 @@ fapply <- function(x, format = NULL, width = NULL, justify = NULL) {
 #' @param format1 A format to be applied to the first input.
 #' @param format2 A format to be applied to the second input.
 #' @param sep A separator to use between the two formatted values.  Default
-#' is an empty string (""), meaning there is no separator.
+#' is a single blank space (" ").
 #' @param width The desired character width of the formatted vector.  Default
 #' value is NULL, meaning the vector will be variable width.
 #' @param justify Whether to justify the return vector.  Valid values are 
@@ -302,9 +302,9 @@ fapply <- function(x, format = NULL, width = NULL, justify = NULL) {
 #' v2 <- sd(dt)
 #' 
 #' # Apply formats and combine
-#' fapply2(v1, v2, "%.1f", "(%.2f)", sep = " ")
+#' fapply2(v1, v2, "%.1f", "(%.2f)")
 #' # [1] "4.9 (2.66)"
-fapply2 <- function(x1, x2, format1 = NULL, format2 = NULL, sep = "",
+fapply2 <- function(x1, x2, format1 = NULL, format2 = NULL, sep = " ",
                     width = NULL, justify = NULL) {
   
   
@@ -336,6 +336,26 @@ eval_conditions <- function(x, conds) {
     tmp <- eval(cond[["expression"]])
     if (!is.na(tmp) & !is.null(tmp)) {
       if (tmp) {
+        ret <- format_vector(x, cond[["label"]], udfmt = TRUE)
+        break()
+      }
+    }
+  }
+  
+  return(ret)
+}
+
+
+eval_conditions_back <- function(x, conds) {
+  
+  # Default to the value itself
+  ret <- x
+  
+  # Check all conditions
+  for(cond in conds) {
+    tmp <- eval(cond[["expression"]])
+    if (!is.na(tmp) & !is.null(tmp)) {
+      if (tmp) {
         ret <- cond[["label"]]
         break()
       }
@@ -346,14 +366,67 @@ eval_conditions <- function(x, conds) {
 }
 
 #' @noRd
-format_vector <- function(x, fmt) {
+format_vector <- function(x, fmt, udfmt = FALSE) {
  
+  if ("character" %in% class(fmt)) {
+    if (any(class(x) %in% c("Date", "POSIXt"))) {
+    
+      # For dates, call format
+      if (udfmt == TRUE) {
+        
+        ret <- tryCatch({suppressWarnings(format(x, format = fmt))},
+                        error = function(cond) {fmt})
+        
+      } else {
+        ret <- format(x, format = fmt)
+      }
+    
+    } else if (any(class(x) %in% c("numeric", "character", "integer"))) {
+      
+  
+        # For numerics, call sprintf
+        if (udfmt == TRUE) {
+          ret <- tryCatch({suppressWarnings(sprintf(fmt, x))},
+                        error = function(cond) {fmt})
+        } else {
+          
+          ret <- sprintf(fmt, x)
+        }
+        
+        # Find NA strings
+        nas <- ret == "NA"
+        
+        # Turn NA strings back into real NA
+        ret <- replace(ret, nas, NA)
+    } else {
+      ret <- fmt
+    }
+  } else if ("function" %in% class(fmt)) {
+    
+    ret <- fmt(x)
+    
+  } else if (any(class(fmt) %in% c("Date", "POSIXt"))) {
+    
+    ret <- as.Date(fmt) 
+  } else {
+    
+    ret <- fmt 
+  }
+  
+  return(ret)
+  
+}
+
+
+#' @noRd
+format_vector_back <- function(x, fmt) {
+  
   
   if (any(class(x) %in% c("Date", "POSIXt"))) {
-  
+    
     # For dates, call format
     ret <- format(x, format = fmt)
-  
+    
   } else if (any(class(x) %in% c("numeric", "character", "integer"))) {
     
     # For numerics, call sprintf
@@ -364,7 +437,7 @@ format_vector <- function(x, fmt) {
     
     # Turn NA strings back into real NA
     ret <- replace(ret, nas, NA)
-   
+    
   }
   
   return(ret)

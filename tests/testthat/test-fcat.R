@@ -1,7 +1,33 @@
 context("Format Catalog Tests")
 
 
-test_that("fcat() function works as expected", {
+cdlst <- read.table(header = TRUE, text ='
+CODELISTNAME	RANK	CODEDVALUE	TRANSLATED
+LBNRIND	1	H	High
+LBNRIND	2	L	Low
+LBNRIND	3	N	Normal
+LBTESTCD	1	ALB	Albumin
+LBTESTCD	2	ALP	"Alkaline Phosphatase"
+LBTESTCD	3	ALT	"Alanine Aminotransferase"
+LBTESTCD	4	AST	"Aspartate Aminotransferase"
+LBTESTCD	5	BILDIR	"Direct Bilirubin"
+LBTESTCD	6	BILI	Bilirubin
+LBTESTCD	7	GGT	"Gamma Glutamyl Transferase"
+LBTESTCD	8	HCT Hematocrit
+LBTESTCD	9	HGB Hemoglobin
+LBTESTCD	10	PROT	Protein
+LBTESTCD	11	GLUC	Glucose
+RACE	1	"BLACK OR AFRICAN AMERICAN" "Black or African American"
+RACE	2	ASIAN	Asian
+RACE	3	WHITE	White
+SEX	1	F	Female
+SEX	2	M	Male
+SEX	3	U	Unknown')
+
+
+options("logr.output" = FALSE)
+
+test_that("fcat1: fcat() function works as expected", {
   
   
   c1 <- fcat(lblA = value(condition(x == "A", "Label A"),
@@ -19,7 +45,7 @@ test_that("fcat() function works as expected", {
   
 })
 
-test_that("as.data.frame.fcat() function works as expected", {
+test_that("fcat2: as.data.frame.fcat() function works as expected", {
   
   
   c1 <- fcat(lblA = value(condition(x == "A", "Label A", order = 2),
@@ -44,7 +70,7 @@ test_that("as.data.frame.fcat() function works as expected", {
   
 })
 
-test_that("as.fcat.data.frame() function works as expected", {
+test_that("fcat3: as.fcat.data.frame() function works as expected", {
   
   
   c1 <- fcat(lblA = value(condition(x == "A", "Label A", order = 2),
@@ -84,7 +110,7 @@ test_that("as.fcat.data.frame() function works as expected", {
 })
 
 
-test_that("write.fcat and read.fcat functions work as expected.", {
+test_that("fcat4: write.fcat and read.fcat functions work as expected.", {
   
   
   fp <- tempdir()
@@ -110,7 +136,7 @@ test_that("write.fcat and read.fcat functions work as expected.", {
   
 })
 
-test_that("is.fcat function work as expected.", {
+test_that("fcat5: is.fcat function work as expected.", {
   
   c1 <- fcat(num_fmt  = "%.1f",
              label_fmt = value(condition(x == "A", "Label A"),
@@ -123,7 +149,7 @@ test_that("is.fcat function work as expected.", {
   
 })
 
-test_that("fcat can be used for formatting vectors.", {
+test_that("fcat6: fcat can be used for formatting vectors.", {
   
   c1 <- fcat(num_fmt  = "%.1f",
              label_fmt = value(condition(x == "A", "Label A"),
@@ -141,7 +167,7 @@ test_that("fcat can be used for formatting vectors.", {
 })
 
 
-test_that("fcat printing works as expected.", {
+test_that("fcat7: fcat printing works as expected.", {
   
   c1 <- fcat(num_fmt  = "%.1f",
              label_fmt = value(condition(x == "A", "Label A"),
@@ -155,7 +181,7 @@ test_that("fcat printing works as expected.", {
 })
 
 
-test_that("fcat can be applied to a data frame with formats function.", {
+test_that("fcat8: fcat can be applied to a data frame with formats function.", {
   
   c1 <- fcat(AGE  = "%.1f",
              CATEGORY = value(condition(x == "A", "Label A"),
@@ -182,7 +208,7 @@ test_that("fcat can be applied to a data frame with formats function.", {
 
 
 
-test_that("print.fcat works as expected.", {
+test_that("fcat9: print.fcat works as expected.", {
   
   c1 <- fcat(AGE  = "%.1f",
              CATEGORY = value(condition(x == "A", "Label A"),
@@ -205,7 +231,7 @@ test_that("print.fcat works as expected.", {
 })
 
 
-test_that("as.fcat.fmt_lst works as expected.", {
+test_that("fcat10: as.fcat.fmt_lst works as expected.", {
   
   f1 <- flist(AGE  = "%.1f",
              CATEGORY = value(condition(x == "A", "Label A"),
@@ -221,7 +247,7 @@ test_that("as.fcat.fmt_lst works as expected.", {
 
 })
 
-test_that("as.fcat.list works as expected.", {
+test_that("fcat11: as.fcat.list works as expected.", {
   
   l1 <- list(AGE  = "%.1f",
               CATEGORY = value(condition(x == "A", "Label A"),
@@ -238,7 +264,7 @@ test_that("as.fcat.list works as expected.", {
 })
 
 
-test_that("as.fcat.tbl_df works as expected.", {
+test_that("fcat12: as.fcat.tbl_df works as expected.", {
   
   c1 <- fcat(AGE  = "%.1f",
              CATEGORY = value(condition(x == "A", "Label A"),
@@ -258,7 +284,7 @@ test_that("as.fcat.tbl_df works as expected.", {
   
 })
 
-test_that("row_limit parameter works as expected", {
+test_that("fcat13: row_limit parameter works as expected", {
   
   
   c1 <- fcat(lblA = value(condition(x == "A", "Label A", order = 2),
@@ -285,7 +311,7 @@ test_that("row_limit parameter works as expected", {
 })
 
 
-test_that("print.fcat function works as expected", {
+test_that("fcat14: print.fcat function works as expected", {
   
   
   c1 <- fcat(lblA = value(condition(x == "A", "Label A"),
@@ -306,4 +332,45 @@ test_that("print.fcat function works as expected", {
   
 })
 
+# This is a test of printing to console.  No real test.
+test_that("fcat15: log parameter works as expected.", {
+  
+  # Prints to console
+  c1 <- fcat(lblA = c(A = 1, B = 2),
+             lblB = "%1.1f"
+  )
+  
+  # Does not print to console
+  c1 <- fcat(lblA = c(A = 1, B = 2),
+             lblB = "%1.1f", log = FALSE
+  )
+  
+  expect_equal(1, 1)
+  
+})
 
+
+test_that("fcat16: import.fcat works as expected.", {
+  
+  res <- import.fcat(cdlst, name = "CODELISTNAME", 
+                     value = "CODEDVALUE", 
+                     label = "TRANSLATED")
+  
+  res
+  
+  expect_equal(length(res), 4)
+  expect_equal(names(res), c("LBNRIND", "LBTESTCD", "RACE", "SEX"))
+
+
+  expect_equal(length(res$SEX), 3)
+  expect_equal(length(res$LBNRIND), 3)
+  expect_equal(length(res$LBTESTCD), 11)
+  expect_equal(length(res$RACE), 3)
+  
+  res$SEX
+  
+  res1 <- fapply(c("M", "F", "M"), res$SEX)
+  
+  expect_equal(res1[1], "Male")
+  
+})
