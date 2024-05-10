@@ -61,12 +61,14 @@ fl2 <- as.flist(lst2, type = "row")
 
 Other flist: 
 \code{\link{as.data.frame.fmt_lst}()},
+\code{\link{as.flist}()},
 \code{\link{as.flist.data.frame}()},
 \code{\link{as.flist.fcat}()},
 \code{\link{as.flist.tbl_df}()},
-\code{\link{as.flist}()},
 \code{\link{flist}()},
 \code{\link{is.flist}()},
-\code{\link{print.fmt_lst}()}
+\code{\link{print.fmt_lst}()},
+\code{\link{read.flist}()},
+\code{\link{write.flist}()}
 }
 \concept{flist}

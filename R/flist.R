@@ -70,24 +70,50 @@
 #' 
 #' 
 #' ## Example 3: Formatting List - Row Type with lookup ##
+#' 
+#' #' # Create formatting list
+#' fl3 <- flist(type = "row", 
+#'              DEC1 = "%.1f",
+#'              DEC2 = "%.2f", 
+#'              PCT1 = "%.1f%%")
+#'              
 #' # Set up data
-#' # Notice each row has a different data type
-#' l2 <- list(2841.258, "H", as.Date("2020-06-19"),
-#'            "L", as.Date("2020-04-24"), 1382.8865)
-#' v3 <- c("num", "char", "date", "char", "date", "num")
+#' df <- data.frame(CODE = c("DEC1", "DEC2", "PCT1", "DEC2", "PCT1"),
+#'                  VAL = c(41.258, 62.948, 12.125, 65.294, 15.825))
 #' 
-#' # Create formatting list
-#' fl3 <- flist(type = "row", lookup = v3,
-#'              num = function(x) format(x, digits = 2, nsmall = 1, 
-#'                                   big.mark=","),
-#'              char = value(condition(x == "H", "High"),
-#'                      condition(x == "L", "Low"),
-#'                      condition(TRUE, "NA")),
-#'              date = "%d%b%Y")
+#' # Assign lookup
+#' fl3$lookup <- df$CODE
 #' 
-#' # Apply formatting list to vector, using lookup
-#' fapply(l2, fl3)
-#' # [1] "2,841.3"   "High"      "19Jun2020" "Low"       "24Apr2020" "1,382.9"
+#' # Apply Formatting List
+#' fapply(df$VAL, fl3)
+#' # [1] "41.3"  "62.95" "12.1%" "65.29" "15.8%"
+#' 
+#' ## Example 4: Formatting List - Values with Units ##
+#' 
+#' #' # Create formatting list
+#' fl4 <- flist(type = "row", 
+#'              BASO = "%.2f x10(9)/L",
+#'              EOS  = "%.2f x10(9)/L",
+#'              HCT = "%.1f%%", 
+#'              HGB = "%.1f g/dL")
+#'              
+#' # Set up data
+#' df <- data.frame(CODE = c("BASO", "EOS", "HCT", "HGB"),
+#'                  VAL = c(0.02384, 0.14683, 40.68374, 15.6345))
+#' 
+#' # Assign lookup
+#' fl4$lookup <- df$CODE
+#' 
+#' # Apply Formatting List
+#' df$VALC <- fapply(df$VAL, fl4)
+#'
+#' # View results
+#' df
+#' #   CODE      VAL          VALC
+#' # 1 BASO  0.02384 0.02 x10(9)/L
+#' # 2  EOS  0.14683 0.15 x10(9)/L
+#' # 3  HCT 40.68374         40.7%
+#' # 4  HGB 15.63450     15.6 g/dL
 flist <- function(..., type = "column", lookup = NULL, simplify = TRUE) {
   
   if (!type %in% c("column", "row"))
@@ -338,14 +364,18 @@ as.data.frame.fmt_lst <- function(x, row.names = NULL, optional = FALSE, ...) {
                                 Type = "S",
                                 Expression = fmts[[i]],
                                 Label = "", 
-                                Order = NA, stringsAsFactors = FALSE)
+                                Order = NA, 
+                                Factor = NA, 
+                                stringsAsFactors = FALSE)
       } else {
         tmp[[nm]] <- data.frame(Name = nm, 
                                 Type = "V",
                                 Expression = paste(deparse(fmts[[i]]), 
                                                    collapse = " "),
                                 Label = "", 
-                                Order = NA, stringsAsFactors = FALSE)
+                                Order = NA, 
+                                Factor = NA, 
+                                stringsAsFactors = FALSE)
       }
       
     } else if (any(class(fmts[[i]]) == "function")) {
@@ -355,7 +385,9 @@ as.data.frame.fmt_lst <- function(x, row.names = NULL, optional = FALSE, ...) {
                                Expression = paste(deparse(fmts[[i]]), 
                                                   collapse = " "),
                                Label = "", 
-                               Order = NA, stringsAsFactors = FALSE)
+                               Order = NA, 
+                               Factor = NA, 
+                               stringsAsFactors = FALSE)
       
       
     }
@@ -372,6 +404,111 @@ as.data.frame.fmt_lst <- function(x, row.names = NULL, optional = FALSE, ...) {
   
   return(ret)
   
+}
+
+
+
+# Read and Write flist ----------------------------------------------------
+
+
+
+#' @title Write a formatting list to the file system
+#' @description The \code{write.flist} function writes a formatting list
+#' to the file system.  By default, the formatting list will be written to the 
+#' current working directory, using the variable name as the file name.  These
+#' defaults can be overridden using the appropriate parameters.  The catalog
+#' will be saved with a file extension of ".flist". 
+#' @param x The formatting list to write.
+#' @param dir_path The directory path to write the catalog to. Default is the 
+#' current working directory.
+#' @param file_name The name of the file to save the catalog as.  Default is
+#' the name of the variable that contains the formatting list.  The ".flist" file
+#' extension will be added automatically.
+#' @return The full path of the saved formatting list.
+#' @family flist
+#' @examples 
+#' # Create formatting list
+#' fl <- flist(f1 = "%5.1f",
+#'             f2 = "%6.2f",
+#'             type = "row")
+#'            
+#' # Get temp directory
+#' tmp <- tempdir()            
+#'            
+#' # Save formatting list to file system
+#' pth <- write.flist(fl, dir_path = tmp)
+#' 
+#' # Read from file system
+#' fr <- read.flist(pth)
+#' 
+#' # Create sample data
+#' dat <- c(12.3844, 292.28432)
+#' 
+#' # Use formats in the catalog
+#' fapply(dat, fr)
+#' # [1] " 12.4"  "292.28"
+#' 
+#' @export
+write.flist <- function(x, dir_path = getwd(), file_name = NULL) {
+  
+  if (is.null(file_name))
+    file_name <- deparse(substitute(x, env = environment()))
+  
+  pth <- file.path(dir_path, paste0(file_name, ".flist"))
+  
+  
+  if (file.exists(pth))
+    file.remove(pth)
+  
+  saveRDS(x, pth)
+  
+  
+  log_logr("Saved formatting list to '" %p% pth %p% "'")
+  
+  return(pth)
+}
+
+
+#' @title Read a formatting list from the file system
+#' @description The \code{read.flist} function reads a formatting list
+#' from the file system.  The function accepts a path to the formatting list,
+#' reads the list, and returns it.
+#' @param file_path The path to the formatting list.
+#' @return The formatting list as an R object.
+#' @family flist
+#' @examples 
+#' # Create formatting list
+#' fl <- flist(f1 = "%5.1f",
+#'             f2 = "%6.2f",
+#'             type = "row")
+#'            
+#' # Get temp directory
+#' tmp <- tempdir()            
+#'            
+#' # Save formatting list to file system
+#' pth <- write.flist(fl, dir_path = tmp)
+#' 
+#' # Read from file system
+#' fr <- read.flist(pth)
+#' 
+#' # Create sample data
+#' dat <- c(12.3844, 292.28432)
+#' 
+#' # Use formats in the catalog
+#' fapply(dat, fr)
+#' # [1] " 12.4"  "292.28"
+#' @export
+read.flist <- function(file_path) {
+  
+  ret <-  readRDS(file_path)
+  
+  log_logr("Read formatting list from '" %p% file_path %p% "'")
+  
+  if (log_output()) {
+    log_logr(ret)
+    print(ret)
+  }
+  return(ret)
 }
 
 
