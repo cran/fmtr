@@ -7,10 +7,15 @@
 \usage{
 descriptions(x)
 
-descriptions(x) <- value
+descriptions(x, verbose = FALSE) <- value
 }
 \arguments{
 \item{x}{A data frame or tibble}
+
+\item{verbose}{If TRUE, the function will emit messages regarding
+which descriptions have been added or revised, and which are still missing. 
+This option can help you if you are filling out a lot of descriptions on
+a large dataset.}
 
 \item{value}{A named list of description values.}
 }
