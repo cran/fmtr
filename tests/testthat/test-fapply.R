@@ -376,3 +376,30 @@ test_that("fapply13: fapply with quarter and date works as expected.", {
   
   
 })
+
+test_that("fapply14: standard numeric formats work with fapply.", {
+  
+  v1 <- c(123.456778910248, 12.384883832456, 1456.2468483838833, 1.4, NA)
+  
+  res <- fapply(v1, "%.2f")
+  
+  res  
+  
+  expect_equal(res[1], "123.46")
+  expect_equal(res[2], "12.38")
+  expect_equal(res[3], "1456.25")
+  expect_equal(res[4], "1.40")
+  expect_equal(is.na(res[5]), TRUE)
+  
+  res <- fapply(v1, "%6.3f")
+  
+  res  
+  
+  expect_equal(res[1], "123.457")
+  expect_equal(res[2], "12.385")
+  expect_equal(res[3], "1456.247")
+  expect_equal(res[4], " 1.400")
+  expect_equal(res[5], "    NA")
+  
+  
+})

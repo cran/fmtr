@@ -39,11 +39,45 @@
 #' the most flexibility and power over your formatting.  You can use 
 #' an existing formatting function from any package, or create 
 #' your own vectorized formatting function using \code{\link[base]{Vectorize}}.}
+#' \item{\strong{"best" format name:} A "best" format name of the form 
+#' "bestW", where "W" is the desired width.  The "best" format replicates the 
+#' SAS format of the same name.  See section below for further information.}
 #' }
 #' 
 #' \code{fapply} will also accept a formatting list, which can contain any 
 #' number of formats from the above list.  To create a formatting list, 
 #' see the \code{\link{flist}} function.
+#' 
+#' @section "best" Format:
+#' The SAS "best" format is used to fit numeric values within a certain width.
+#' The word "best" is followed by the desired width, i.e. "best6" or "best12".
+#' The format will then use the most optimal display for the available 
+#' width. 
+#' 
+#' The format will use the entire value if the number of digits fits in the
+#' desired width.  If not, the format may round the value.  The format may
+#' also use scientific notation if the value is very large or very small.  If
+#' the format cannot fit the value in the desired width at all, it will
+#' emit stars ("*") in the desired width.
+#' 
+#' For input values that are less than the desired width, the result will be 
+#' left-padded with spaces.  The output value will then always contain the exact
+#' number of characters requested.
+#' 
+#' Such a format has no direct equivalent in R, and is indeed difficult to
+#' replicate.  For this reason, the \strong{fmtr} package added this format
+#' option for those situations when you want to replicate SAS "best" formatting
+#' as closely as possible.
+#' 
+#' The "best" format accepts widths between 1 and 32. The default width is 12.
+#' The R "best" format syntax does not accept a number of decimals, as in 
+#' "bestW.d".
+#' 
+#' Note that "best" widths between 8 and 16 will match SAS most reliably.
+#' Small widths have many special cases, and the logic is difficult to replicate.
+#' For large values, there are some differences between SAS and R in how they
+#' represent these numbers, and sometimes they will not match.
+#' 
 #' @param x A vector, factor, or list to apply the format to.
 #' @param format A format to be applied.
 #' @param width The desired character width of the formatted vector.  Default
@@ -66,6 +100,14 @@
 #' # Apply string format.
 #' fapply(v1, "%.1f")
 #' # [1] "1.2" "8.4" "6.0" "2.5"
+#' 
+#' # Apply width and two decimals
+#' fapply(v1, "%5.2f")
+#' # [1] " 1.24" " 8.36" " 5.95" " 2.46"
+#' 
+#' # Apply "best" format
+#' fapply(v1, "best3")
+#' # [1] "1.2" "8.4" "  6" "2.5"
 #' 
 #' ## Example 2: Named vector ##
 #' # Set up vector
@@ -150,6 +192,14 @@
 #' # Apply format to data vector
 #' fapply(v6, fmt5)
 #' # [1] "High"    "1.47"    "3.29"    "Missing" "Low" 
+#' 
+#' # Example 8: "best" Format
+#' #' # Data vector
+#' v7 <- c(12.3456, 1234567.89, NA, 0.123456, 0.000012345)
+#' 
+#' fapply(v7, "best6")
+#' # [1] "12.346" "1.23E6" NA       "0.1235" "123E-7"
+#' 
 fapply <- function(x, format = NULL, width = NULL, justify = NULL) {
   
   # Get attribute values if available
@@ -412,14 +462,38 @@ format_vector <- function(x, fmt, udfmt = FALSE) {
     
     } else if (any(class(x) %in% c("numeric", "character", "integer"))) {
       
-  
-        # For numerics, call sprintf
-        if (udfmt == TRUE) {
-          ret <- tryCatch({suppressWarnings(sprintf(fmt, x))},
-                        error = function(cond) {fmt})
-        } else {
+        bst <- grepl("^best.*", fmt)
+      
+        if (bst) { 
           
-          ret <- sprintf(fmt, x)
+          wdth <- sub("best", "", fmt, fixed = TRUE)
+          
+          if (wdth == "") {
+            wdth <- 12
+          } else {
+            
+            wdth <- suppressWarnings(as.integer(wdth))
+            
+            if (is.na(wdth)) {
+              warning(paste0("Invalid format specification: ", fmt, "\n",
+                             "Reverting to 'best12'."))
+              wdth <- 12 
+            }
+          }
+          
+          ret <- format_best(x, wdth)
+          
+        } else {
+        
+          # For numerics, call sprintf
+          if (udfmt == TRUE) {
+            ret <- tryCatch({suppressWarnings(sprintf(fmt, x))},
+                          error = function(cond) {fmt})
+          } else {
+            
+            ret <- sprintf(fmt, x)
+          }
+          
         }
         
         # Find NA strings
@@ -536,6 +610,10 @@ flist_column_apply <- function(lst, vect) {
 }
 
 
+# Quarter Formatting ------------------------------------------------------
+
+
+
 format_quarter <- function(x, val, fmt) {
   
   q1 <- grepl("%Q", fmt, ignore.case = FALSE, fixed = TRUE)
@@ -585,11 +663,6 @@ format_quarter <- function(x, val, fmt) {
   
   return(ret)
 }
-
-
-
-
-
 
 # Testing -----------------------------------------------------------------
 

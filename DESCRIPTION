@@ -1,7 +1,7 @@
 Package: fmtr
 Type: Package
 Title: Easily Apply Formats to Data
-Version: 1.6.8
+Version: 1.6.9
 Maintainer: David Bosak <dbosak01@gmail.com>
 Authors@R: person(given = "David",
                   family = "Bosak",
@@ -25,7 +25,7 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 NeedsCompilation: yes
-Packaged: 2025-01-28 03:36:28 UTC; dbosa
+Packaged: 2025-09-08 23:52:26 UTC; dbosa
 Author: David Bosak [aut, cre]
 Repository: CRAN
-Date/Publication: 2025-01-28 04:00:01 UTC
+Date/Publication: 2025-09-09 07:20:07 UTC
