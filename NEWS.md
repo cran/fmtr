@@ -1,3 +1,9 @@
+# fmtr 1.7.0
+
+* Added `fmt_mean_stderr()` helper function.
+* Handle variations on "best" format specification.
+* Added "dateW" formats to `fapply()`.
+
 # fmtr 1.6.9
 
 * Added "best" format to `fapply()` function.  This format recreates the "best."

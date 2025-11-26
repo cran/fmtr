@@ -95,5 +95,10 @@ Useful links:
 \author{
 \strong{Maintainer}: David Bosak \email{dbosak01@gmail.com}
 
+Authors:
+\itemize{
+  \item Chen Ling \email{chen.lingcpu@gmail.com}
+}
+
 }
 \keyword{internal}
