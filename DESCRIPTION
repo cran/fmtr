@@ -1,7 +1,7 @@
 Package: fmtr
 Type: Package
 Title: Easily Apply Formats to Data
-Version: 1.7.0
+Version: 1.7.1
 Maintainer: David Bosak <dbosak01@gmail.com>
 Authors@R: c(person(given = "David",
                   family = "Bosak",
@@ -24,14 +24,15 @@ Encoding: UTF-8
 URL: https://fmtr.r-sassy.org, https://github.com/dbosak01/fmtr
 BugReports: https://github.com/dbosak01/fmtr/issues
 Depends: R (>= 4.0.0), common
-Suggests: testthat, knitr, rmarkdown, covr, logr, utils, dplyr, libr
+Suggests: testthat, knitr, rmarkdown, covr, logr, utils, dplyr, libr,
+        hms
 Imports: tibble, stats, crayon, Rcpp
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 NeedsCompilation: yes
-Packaged: 2025-11-26 11:16:20 UTC; dbosa
+Packaged: 2026-01-21 03:38:30 UTC; dbosa
 Author: David Bosak [aut, cre],
   Chen Ling [aut]
 Repository: CRAN
-Date/Publication: 2025-11-26 11:50:02 UTC
+Date/Publication: 2026-01-21 06:40:48 UTC
